@@ -57,18 +57,19 @@ class CustomersDocument extends BaseDocument
 
         // Go through each customer element and use the assigned method
         foreach ($customerTags as $tag => $method) {
-
-            if($value = $customer->$method()) {
-                // Make text node for method value
-                $node = $this->createTextNode($value);
-
-                // Make the actual element and assign the node
-                $element = $this->createElement($tag);
-                $element->appendChild($node);
-
-                // Add the full element
-                $customerEl->appendChild($element);
+            $value = $customer->$method();
+            if (!is_string($value) {
+                throw new \RuntimeException(sprintf('Customer->%s must return a string. %s type is not supported by XML documents.', $method, gettype($value));
             }
+            // Make text node for method value
+            $node = $this->createTextNode($value);
+
+            // Make the actual element and assign the node
+            $element = $this->createElement($tag);
+            $element->appendChild($node);
+
+            // Add the full element
+            $customerEl->appendChild($element);
         }
 
         // Check if the financial information should be supplied
