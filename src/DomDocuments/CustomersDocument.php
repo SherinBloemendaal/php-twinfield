@@ -59,7 +59,7 @@ class CustomersDocument extends BaseDocument
         foreach ($customerTags as $tag => $method) {
             $value = $customer->$method();
             if (!is_string($value)) {
-                throw new \RuntimeException(sprintf('Customer->%s must return a string. %s type is not supported by XML documents.', $method, gettype($value));
+                throw new \RuntimeException(sprintf('Customer->%s must return a string. %s type is not supported by XML documents.', $method, gettype($value)));
             }
             // Make text node for method value
             $node = $this->createTextNode($value);
