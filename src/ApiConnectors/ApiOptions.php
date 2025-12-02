@@ -6,7 +6,8 @@ final class ApiOptions
 {
     private $retriableExceptionMessages = [
         "SSL: Connection reset by peer",
-        "Your logon credentials are not valid anymore. Try to log on again."
+        "Your logon credentials are not valid anymore. Try to log on again.",
+        "Too Many Requests",
     ];
 
     private $maxRetries = 3;
