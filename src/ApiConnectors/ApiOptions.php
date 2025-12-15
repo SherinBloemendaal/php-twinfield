@@ -12,6 +12,8 @@ final class ApiOptions
 
     private $maxRetries = 3;
 
+    private $useRetryAfterHeader = false;
+
     /**
      * @throws \InvalidArgumentException
      */
@@ -98,5 +100,15 @@ final class ApiOptions
             $this->retriableExceptionMessages,
             $maxRetries
         );
+    }
+
+    public function getUseRetryAfterHeader(): bool
+    {
+        return $this->useRetryAfterHeader;
+    }
+
+    public function setUseRetryAfterHeader(bool $useRetryAfterHeader): void
+    {
+        $this->useRetryAfterHeader = $useRetryAfterHeader;
     }
 }

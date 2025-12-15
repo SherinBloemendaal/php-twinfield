@@ -92,9 +92,8 @@ abstract class BaseApiConnector implements LoggerAwareInterface
             return $response;
         } catch (\SoapFault | \ErrorException $exception) {
             /* Set retry delay from client's last response header before reset */
-            if ($service !== null) {
-                $headers = HeaderBag::fromString($service->__getLastResponseHeaders() ?? '');
-                $this->retryDelay = (int)$headers->get("Retry-After", "0");
+            if ($service !== null && $this->getOptions()->getUseRetryAfterHeader()) {
+                $this->setRetryDelayFromHeaders($service->__getLastResponseHeaders());
             }
 
             /*
@@ -127,6 +126,16 @@ abstract class BaseApiConnector implements LoggerAwareInterface
             $this->logFailedRequest($exception);
             throw new Exception($exception->getMessage(), 0, $exception);
         }
+    }
+
+    /**
+     * @param string|null $rawHeaders
+     * @return void
+     */
+    public function setRetryDelayFromHeaders(?string $rawHeaders): void
+    {
+        $headers = HeaderBag::fromString($rawHeaders ?? '');
+        $this->retryDelay = (int)$headers->get("Retry-After", "0");
     }
 
     final protected function unwrapSingleResponse(MappedResponseCollection $responses) {

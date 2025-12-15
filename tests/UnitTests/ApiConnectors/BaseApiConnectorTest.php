@@ -420,6 +420,9 @@ class BaseApiConnectorTest extends TestCase implements LoggerInterface
 
     public function testRetryDelayIsLoggedAndApplied()
     {
+        $options = new ApiOptions();
+        $options->setUseRetryAfterHeader(true);
+
         $request_document = new \DOMDocument();
         $request_document->loadXML('<dimension>value</dimension>');
 
@@ -445,7 +448,7 @@ class BaseApiConnectorTest extends TestCase implements LoggerInterface
 
         // Use a partial mock to intercept sleep
         $service = $this->getMockBuilder(BaseApiConnector::class)
-            ->setConstructorArgs([$this->connection])
+            ->setConstructorArgs([$this->connection, $options])
             ->onlyMethods(['sleep'])
             ->getMockForAbstractClass();
         $service->expects($this->once())
