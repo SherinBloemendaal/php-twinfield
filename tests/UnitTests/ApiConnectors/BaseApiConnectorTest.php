@@ -420,8 +420,7 @@ class BaseApiConnectorTest extends TestCase implements LoggerInterface
 
     public function testRetryDelayIsLoggedAndApplied()
     {
-        $options = new ApiOptions();
-        $options->setUseRetryAfterHeader(true);
+        $options = new ApiOptions(null, null, true);
 
         $request_document = new \DOMDocument();
         $request_document->loadXML('<dimension>value</dimension>');

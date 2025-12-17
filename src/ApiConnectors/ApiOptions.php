@@ -118,8 +118,12 @@ final class ApiOptions
         return $this->useRetryAfterHeader;
     }
 
-    public function setUseRetryAfterHeader(bool $useRetryAfterHeader): void
+    public function setUseRetryAfterHeader(bool $useRetryAfterHeader): ApiOptions
     {
-        $this->useRetryAfterHeader = $useRetryAfterHeader;
+        return new self(
+            $this->retriableExceptionMessages,
+            $this->maxRetries,
+            $useRetryAfterHeader
+        );
     }
 }
