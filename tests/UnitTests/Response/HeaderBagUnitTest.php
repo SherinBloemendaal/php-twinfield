@@ -2,12 +2,15 @@
 
 namespace UnitTests\Response;
 
-class HeaderBagUnitTest extends \PHPUnit\Framework\TestCase
+use PhpTwinfield\Response\HeaderBag;
+use PHPUnit\Framework\TestCase;
+
+class HeaderBagUnitTest extends TestCase
 {
     public function testFromStringAndGet()
     {
         $rawHeaders = "Content-Type: application/json\r\nX-Custom-Header: CustomValue\r\n";
-        $headerBag = \PhpTwinfield\Response\HeaderBag::fromString($rawHeaders);
+        $headerBag = HeaderBag::fromString($rawHeaders);
 
         $this->assertEquals('application/json', $headerBag->get('Content-Type'));
         $this->assertEquals('CustomValue', $headerBag->get('X-Custom-Header'));
@@ -17,7 +20,7 @@ class HeaderBagUnitTest extends \PHPUnit\Framework\TestCase
     public function testGetWithDefault()
     {
         $rawHeaders = "Content-Type: application/json\r\n";
-        $headerBag = \PhpTwinfield\Response\HeaderBag::fromString($rawHeaders);
+        $headerBag = HeaderBag::fromString($rawHeaders);
 
         $this->assertEquals('application/json', $headerBag->get('Content-Type', 'default'));
         $this->assertEquals('default', $headerBag->get('Non-Existent-Header', 'default'));
@@ -25,7 +28,7 @@ class HeaderBagUnitTest extends \PHPUnit\Framework\TestCase
 
     public function testEmptyHeaders()
     {
-        $headerBag = \PhpTwinfield\Response\HeaderBag::fromString('');
+        $headerBag = HeaderBag::fromString('');
 
         $this->assertNull($headerBag->get('Any-Header'));
     }
@@ -33,7 +36,7 @@ class HeaderBagUnitTest extends \PHPUnit\Framework\TestCase
     public function testGetCaseInsensitive()
     {
         $rawHeaders = "Content-Type: application/json\r\nX-Custom-Header: CustomValue\r\n";
-        $headerBag = \PhpTwinfield\Response\HeaderBag::fromString($rawHeaders);
+        $headerBag = HeaderBag::fromString($rawHeaders);
 
         $this->assertEquals('application/json', $headerBag->get('content-type'));
         $this->assertEquals('CustomValue', $headerBag->get('x-custom-header'));
