@@ -12,12 +12,12 @@ final class ApiOptions
 
     private $maxRetries = 3;
 
-    private $useRetryAfterHeader = false;
+    private $useRetryAfterHeader;
 
     /**
      * @throws \InvalidArgumentException
      */
-    public function __construct(?array $messages = null, ?int $maxRetries = null)
+    public function __construct(?array $messages = null, ?int $maxRetries = null, bool $useRetryAfterHeader = false)
     {
         if ($messages !== null) {
             $this->validateMessages($messages);
@@ -27,6 +27,8 @@ final class ApiOptions
             $this->validateMaxRetries($maxRetries);
             $this->maxRetries = $maxRetries;
         }
+
+        $this->useRetryAfterHeader = $useRetryAfterHeader;
     }
 
     /**
