@@ -67,6 +67,32 @@ class SessionService extends BaseService {
     }
 
     /**
+     * @throws Exception
+     */
+    public function getClusterFromAccessToken(string $accessToken): string
+    {
+        $response = $this->AccessTokenLogon([
+            'accessToken' => $accessToken,
+        ]);
+
+        $result = $response->AccessTokenLogonResult;
+
+        if ($result !== self::CHANGE_OK) {
+            throw new Exception("Failed AccessTokenLogon, result was \"{$result}\".");
+        }
+
+        $loginResponse = $this->__getLastResponse();
+
+        $envelope = new \DOMDocument();
+        $envelope->loadXML($loginResponse);
+
+        $clusterElements = $envelope->getElementsByTagName('cluster');
+        $cluster = $clusterElements->item(0)->textContent;
+
+        return $cluster;
+    }
+
+    /**
      * Sets the current company in the API
      *
      * @param Office $office

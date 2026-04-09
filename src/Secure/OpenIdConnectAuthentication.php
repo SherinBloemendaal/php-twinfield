@@ -8,6 +8,7 @@ use PhpTwinfield\Office;
 use PhpTwinfield\Secure\Provider\InvalidAccessTokenException;
 use PhpTwinfield\Secure\Provider\OAuthException;
 use PhpTwinfield\Secure\Provider\OAuthProvider;
+use PhpTwinfield\Services\SessionService;
 
 /**
  * This class allows you to authenticate with an access token to the Twinfield APIs.
@@ -119,15 +120,50 @@ class OpenIdConnectAuthentication extends AuthenticatedConnection
      */
     protected function login(): void
     {
-        // Refresh the token when it's not set or is set, but expired or incomplete.
         if (!$this->hasAccessToken() || $this->isExpiredAccessToken()) {
             $this->refreshToken();
         }
 
-        // There's no need to validate the access token if it's already validated and still valid.
         if (!$this->hasValidatedAccessToken()) {
             $validationResult = $this->validateToken();
-            $this->setCluster($validationResult["twf.clusterUrl"]);
+
+            $clusterUrl = $validationResult["twf.clusterUrl"] ?? null;
+
+            if (null === $clusterUrl) {
+                $clusterUrl = $this->resolveClusterViaSession();
+            }
+
+            $this->setCluster($clusterUrl);
+        }
+    }
+
+    /**
+     * Resolve the cluster URL via the Session SOAP service AccessTokenLogon.
+     * Used as fallback when the accesstokenvalidation endpoint does not return twf.clusterUrl
+     * (e.g. when the token was issued without the twf.organisation scope).
+     *
+     * @throws OAuthException
+     * @throws InvalidAccessTokenException
+     */
+    protected function resolveClusterViaSession(): string
+    {
+        $this->throwExceptionMissingAccessToken();
+
+        try {
+            $sessionService = new SessionService();
+
+            return $sessionService->getClusterFromAccessToken(
+                $this->getAccessToken()->getToken()
+            );
+        } catch (\Exception $e) {
+            throw new OAuthException(
+                "Could not resolve Twinfield cluster URL. "
+                . "Ensure the OAuth client has the 'twf.organisation' scope, "
+                . "or that the access token is valid for AccessTokenLogon. "
+                . "Original error: " . $e->getMessage(),
+                0,
+                $e
+            );
         }
     }
 
