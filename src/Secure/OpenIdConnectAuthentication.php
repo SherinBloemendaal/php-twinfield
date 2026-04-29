@@ -134,6 +134,13 @@ class OpenIdConnectAuthentication extends AuthenticatedConnection
             }
 
             $this->setCluster($clusterUrl);
+
+            // Mark the access token as validated so subsequent SOAP calls reuse the
+            // existing cluster instead of re-issuing an accesstokenvalidation HTTP
+            // request on every authenticated request. setAccessToken() already
+            // resets this flag whenever the token is rotated, so it remains
+            // correct for the lifetime of the current access token.
+            $this->setValidatedAccessToken(true);
         }
     }
 
